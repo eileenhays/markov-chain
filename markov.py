@@ -36,12 +36,21 @@ def make_chains(text_string):
         >>> chains[('there','juanita')]
         [None]
     """
-    pass
+
     chains = {}
 
-    # your code goes here
+    #split the string into list of words
+    words_list = text_string.split()
 
-    return chains
+    #make the keys as tuple of bigrams
+    for idx in range(len(words_list)-2):
+        key = (words_list[idx], words_list[idx+1])#why doesn't this have an index error for i+1 for the last item?
+        if key not in chains:
+            chains[key] = []
+
+        chains[key].append(words_list[idx+2])
+
+    print chains
 
 
 def make_text(chains):
