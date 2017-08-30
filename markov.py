@@ -86,8 +86,9 @@ def make_text(chains):
     return gen_text
 
 
-input_path = "green-eggs.txt"
+# input_path = "green-eggs.txt"
 # input_path = "gettysburg.txt"
+input_path = "somewhere-over-rainbow.txt"
 # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
 
