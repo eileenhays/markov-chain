@@ -1,6 +1,7 @@
 """Generate Markov text from text files."""
 
 from random import choice
+import sys
 
 
 def open_and_read_file(file_path):
@@ -12,12 +13,12 @@ def open_and_read_file(file_path):
     filename = open(file_path)
     return filename.read()
 
-def make_chains(text_string):
-    """Take input text as string; return dictionary of Markov chains.
+def make_chains(text_string, n):
+    """Take input text as string for n-length grams; return dictionary of Markov chains.
 
     A chain will be a key that consists of a tuple of (word1, word2)
     and the value would be a list of the word(s) that follow those two
-    words in the input text.
+    words in the input text. n argument allows user to designate the length as n-gram.
 
     For example:
 
@@ -42,59 +43,53 @@ def make_chains(text_string):
     #split the string into list of words
     words_list = text_string.split()
 
-    #make the keys as tuple of bigrams
-    for idx in range(len(words_list)-2):
-        key = (words_list[idx], words_list[idx+1])#why doesn't this have an index error for i+1 for the last item?
-        if key not in chains:
+    #make the keys as tuple of n-grams
+    for idx in range(len(words_list)-n):    #words[idx] = word + "\n"
+        key = []
+        j = 0
+        while j < n:   #create n-length grams keys
+            key.append(words_list[idx+j])
+            j += 1
+
+        key = tuple(key) #turn key into a tuple
+
+        if key not in chains: #add new keys without value to dictionary
             chains[key] = []
 
-        chains[key].append(words_list[idx+2])
+        chains[key].append(words_list[idx+n]) #add new key with values into dict
 
     return chains
 
 
 def make_text(chains):
     """Return text from chains."""
-
     words = []
-    keys_list = chains.keys()
+    punctuation = [".", ",", "!", "?", ";", ":"]
 
-    first_bigram = choice(keys_list) #picks random bigram key
-    words.append(first_bigram[0])
-    words.append(first_bigram[1])
-    value = chains[first_bigram]
+    curr_ngram = choice(chains.keys()) #picks random bigram key
+    words.extend(curr_ngram)
 
-    new_bigram = (first_bigram[1], choice(value))
+    while curr_ngram in chains: #there is a curr_value in the dictionary:
+        curr_key = curr_ngram[1:]
+        curr_value = choice(chains[curr_ngram]) #randomly selects curr_value
+        curr_ngram = curr_key + (curr_value,) #updates the curr_ngram variable
+        words.append(curr_ngram[-1])
 
-    while new_bigram in chains: #there is a value in the dictionary:
-        key = new_bigram[1]
-        value = choice(chains[new_bigram]) #randomly selects value
-
-        new_bigram = (key, value) #updates the new_bigram variable
-        words.append(new_bigram[0])
-
-    words.append(new_bigram[1]) #add the last word on
-
-    # for idx, word in words.items(): #add a line break after a "?"
-    #     for char in word:
-    #         if char == "?":
-    #             words[idx] = word + "\n"
-
-    # print words
     gen_text = " ".join(words)#long string of generated text
 
     return gen_text
 
 
-# input_path = "green-eggs.txt"
-# input_path = "gettysburg.txt"
-input_path = "somewhere-over-rainbow.txt"
+
+file_path = sys.argv[1]
+
 # Open the file and turn it into one long string
-input_text = open_and_read_file(input_path)
+input_text = open_and_read_file(file_path)
 
 # Get a Markov chain
-chains = make_chains(input_text)
-
+n = 4
+chains = make_chains(input_text,n)
+# print chains
 # # Produce random text
 random_text = make_text(chains)
 
