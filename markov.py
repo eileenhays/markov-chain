@@ -50,21 +50,44 @@ def make_chains(text_string):
 
         chains[key].append(words_list[idx+2])
 
-    print chains
+    return chains
 
 
 def make_text(chains):
     """Return text from chains."""
-    pass
+
     words = []
+    keys_list = chains.keys()
 
-    # your code goes here
+    first_bigram = choice(keys_list) #picks random bigram key
+    words.append(first_bigram[0])
+    words.append(first_bigram[1])
+    value = chains[first_bigram]
 
-    return " ".join(words)
+    new_bigram = (first_bigram[1], choice(value))
+
+    while new_bigram in chains: #there is a value in the dictionary:
+        key = new_bigram[1]
+        value = choice(chains[new_bigram]) #randomly selects value
+
+        new_bigram = (key, value) #updates the new_bigram variable
+        words.append(new_bigram[0])
+
+    words.append(new_bigram[1]) #add the last word on
+
+    # for idx, word in words.items(): #add a line break after a "?"
+    #     for char in word:
+    #         if char == "?":
+    #             words[idx] = word + "\n"
+
+    # print words
+    gen_text = " ".join(words)#long string of generated text
+
+    return gen_text
 
 
 input_path = "green-eggs.txt"
-
+# input_path = "gettysburg.txt"
 # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
 
@@ -72,6 +95,6 @@ input_text = open_and_read_file(input_path)
 chains = make_chains(input_text)
 
 # # Produce random text
-# random_text = make_text(chains)
+random_text = make_text(chains)
 
-# print random_text
+print random_text
